@@ -4,6 +4,9 @@
     <groupId>pl.dp.poid</groupId>
     <artifactId>EyeMouthDetection</artifactId>
     <version>1.0</version>
+    <modules>
+        <module>ClassificationWithSegmentationMethod</module>
+    </modules>
     <packaging>pom</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -38,4 +41,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.0.19</version>
+        </dependency>
+    </dependencies>
 </project>
