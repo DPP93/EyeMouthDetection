@@ -61,9 +61,6 @@ MTFL
 *.iml
 EyeMouthDetection.iml
 
-target
-
-
 target/
 pom.xml.tag
 pom.xml.releaseBackup
