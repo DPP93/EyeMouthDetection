@@ -20,6 +20,7 @@ public class Main {
 
         HorizontalEdges he = new HorizontalEdges();
         he.computeHorizontalEdgeDetectionMasks();
+//        he.checking();
         he.saveImages();
     }
 
