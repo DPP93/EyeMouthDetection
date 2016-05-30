@@ -1,5 +1,7 @@
+import image.processing.ColorHSVTest;
 import image.processing.HorizontalEdges;
 import image.processing.ImageProcessing;
+import image.processing.SobelOperator;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -22,6 +24,16 @@ public class Main {
         he.computeHorizontalEdgeDetectionMasks();
 //        he.checking();
         he.saveImages();
+
+        SobelOperator so = new SobelOperator();
+        so.computeHorizontalEdgeDetectionMasks();
+        so.saveImages();
+
+        ColorHSVTest cht = new ColorHSVTest();
+        cht.saveImages();
+        cht.checkHSVValues();
+        cht.eyeMather();
+        cht.saveImages();
     }
 
 }

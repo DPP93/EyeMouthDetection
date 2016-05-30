@@ -11,11 +11,16 @@ import java.util.List;
 public class HorizontalEdges extends ImageProcessing{
     private double divisor = (1.0 / 4.0);
     private double[][] horizontalMask = {
-            {-divisor, 0, divisor},
-            {0, 0, 0},
-            {divisor, 0, -divisor}
+            {-1, 1, 1},
+            {2, 2, 2},
+            {-1, -1, -1}
     };
 
+//    private double[][] horizontalMask = {
+//            {-1, 0, 1},
+//            {-2, 0, 2},
+//            {-1, 0, 1}
+//    };
     public HorizontalEdges() {
         super();
         indentifier = "ImagesTests/TESTS-HORIZONTAL EDGE DETECTION";
