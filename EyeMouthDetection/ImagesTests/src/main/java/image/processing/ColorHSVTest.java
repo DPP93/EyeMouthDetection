@@ -73,7 +73,7 @@ public class ColorHSVTest extends ImageProcessing{
                 for(int y = 0; y < b.getHeight(); y++){
                     d = b.getRaster().getPixel(x,y, d);
                     h = Color.RGBtoHSB(d[0], d[1], d[2], h);
-                    if (h[2] < 0.4) {
+                    if (h[2] < 0.3) {
                         int[] tab = {255,255,255};
                         b.getRaster().setPixel(x,y, tab);
                     }
