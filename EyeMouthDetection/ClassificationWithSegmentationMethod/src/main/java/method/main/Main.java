@@ -17,10 +17,11 @@ public class Main {
         System.out.println("Hello");
         System.out.println(Main.class.getPackage());
 
-        BufferedImage b = ImageIO.read(new File("mike.jpg"));
-        b = ColorModelModifier.convertImageToGrayscale(b);
+        BufferedImage b = ImageIO.read(new File("gary.jpg"));
+//        b = ColorModelModifier.convertImageToGrayscale(b);
         ImageIO.write(b, "jpg", new File("garyWhite.jpg"));
-        b = SegmentationRegionGrowth.segmentateImage(b, 30, new Point(60, 46));
+//        b = SegmentationRegionGrowth.segmentateImageByGrayscale(b, 17, new Point(102, 117));
+        b = SegmentationRegionGrowth.segmentateImageByGrayscale(b, 15, new Point(102, 117));
 
         ImageIO.write(b, "jpg", new File("garyTest.jpg"));
     }

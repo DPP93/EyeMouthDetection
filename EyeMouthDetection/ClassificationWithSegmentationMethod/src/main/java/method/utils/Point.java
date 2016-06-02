@@ -6,19 +6,19 @@ import java.util.Comparator;
  * Created by dpp on 6/2/16.
  */
 public class Point implements Comparator<Point> {
-    private final int x;
-    private final int y;
+    private final double x;
+    private final double y;
 
-    public Point(int x, int y) {
+    public Point(double x, double y) {
         this.x = x;
         this.y = y;
     }
 
-    public int getX() {
+    public double getX() {
         return x;
     }
 
-    public int getY() {
+    public double getY() {
         return y;
     }
 
@@ -40,10 +40,5 @@ public class Point implements Comparator<Point> {
         return false;
     }
 
-    @Override
-    public int hashCode() {
-        int result = x;
-        result = 31 * result + y;
-        return result;
-    }
+
 }
