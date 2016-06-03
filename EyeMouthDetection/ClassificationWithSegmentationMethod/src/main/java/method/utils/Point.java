@@ -6,8 +6,8 @@ import java.util.Comparator;
  * Created by dpp on 6/2/16.
  */
 public class Point implements Comparator<Point> {
-    private final double x;
-    private final double y;
+    private double x;
+    private double y;
 
     public Point(double x, double y) {
         this.x = x;
@@ -22,6 +22,13 @@ public class Point implements Comparator<Point> {
         return y;
     }
 
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
 
     @Override
     public int compare(Point o1, Point o2) {
@@ -71,5 +78,9 @@ public class Point implements Comparator<Point> {
             return true;
         }
         return false;
+    }
+
+    public static double computeDistanceBetweenPoints(Point p1, Point p2){
+        return Math.sqrt(Math.pow(p1.getX() - p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2));
     }
 }

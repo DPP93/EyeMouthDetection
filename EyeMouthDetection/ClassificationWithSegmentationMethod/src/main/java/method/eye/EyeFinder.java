@@ -22,7 +22,7 @@ import java.util.Random;
  */
 public class EyeFinder {
 
-    private double averageEyeBrightness = 50;
+    private double averageEyeBrightness = 10;
     private ImageDatabase imageDatabase;
     private Annotations trainingAnnotations;
 
@@ -34,10 +34,9 @@ public class EyeFinder {
         trainingAnnotations = new Annotations();
         trainingAnnotations.setupElements(new File(databaseDirectory+"/training.txt"));
         imageDatabase = new ImageDatabase(databaseDirectory);
-        leftEyeRegion = new ClassificationRegion(new Point(0,0),new Point(0.1,0), new Point(0,0.1), new Point(0.1,0.1));
-        rightEyeRegion = new ClassificationRegion(new Point(0.8,0.0),new Point(0.9,0.0), new Point(0.8,0.1), new Point(0.9,0.1));
+        leftEyeRegion = new ClassificationRegion(4, 0,0.5);
+        rightEyeRegion = new ClassificationRegion(4, 0.5,1);
     }
-
     public void learn() throws IOException {
         List<ImageFile> testList = imageDatabase.getTrainingFiles();
         int[] pixelValue;
@@ -55,12 +54,24 @@ public class EyeFinder {
 
             value = image.getRaster().getPixel((int)face.getLeftEye().getX(), (int)face.getLeftEye().getY(), pixelValue)[0];
             averageEyeBrightness += computeModificationOfAverage(averageEyeBrightness, value);
+            ClassificationRegion.modifyClassificationRegion(leftEyeRegion,
+                    SimpleClassifier.simpleClassificator(image, new Point((int)face.getLeftEye().getX(),(int)face.getLeftEye().getY())),
+                    0.01);
+
+            ClassificationRegion.modifyClassificationRegion(
+                    rightEyeRegion,
+                    SimpleClassifier.simpleClassificator(image, new Point((int)face.getRightEye().getX(),(int)face.getRightEye().getY())),
+                    0.01);
 
             value = image.getRaster().getPixel((int)face.getRightEye().getX(), (int)face.getRightEye().getY(), pixelValue)[0];
             averageEyeBrightness += computeModificationOfAverage(averageEyeBrightness, value);
         }
 
         System.out.println("AVERAGE GRAYSCALE EYE VALUE "+averageEyeBrightness);
+        System.out.println("Left region");
+        System.out.println(leftEyeRegion.toString());
+        System.out.println("Right region");
+        System.out.println(rightEyeRegion.toString());
     }
 
     public List<Point> findEyes(BufferedImage img, int plusTolerationInSegmentation){
@@ -69,13 +80,13 @@ public class EyeFinder {
         ColorModelModifier.convertImageToGrayscale(image);
         MedianFilter.computeMedianFilter(image);
 
-        Point closestAverageSegmentation = new Point(-1,-1);
-        double closestToAverage = Double.MAX_VALUE;
-        Point secondClosestAverageSegmentation = new Point(-1,-1);
-        double secondClosestToAverage = Double.MAX_VALUE;
+        Point closestLeftAverageSegmentation = new Point(-1,-1);
+        double closestLeftToAverage = Double.MAX_VALUE;
+        Point closestRightToAverageSegmenatation = new Point(-1,-1);
+        double closestRightToAverage = Double.MAX_VALUE;
         int[] pixelValue = new int[image.getColorModel().getPixelSize()/8];
-        for(int x = 10; x < image.getWidth()-10; x+=5) {
-            for (int y = 10; y < image.getHeight()-10; y+=5){
+        for(int x = 25; x < image.getWidth()-25; x++) {
+            for (int y = 25; y < image.getHeight()-25; y++){
 //                Zrób segmentację i sprawdź czy z tych wartości wychodzi obszar
                 List<Point> elementsSegmanetated = SegmentationRegionGrowth.
                         segmentateImageByGrayscale(image, 5, new Point(x,y));
@@ -87,26 +98,26 @@ public class EyeFinder {
                 }
                 avg /= elementsSegmanetated.size();
 
-                if (closestToAverage > Math.pow(avg - averageEyeBrightness,2)){
-                    closestToAverage = avg;
-                    closestAverageSegmentation = new Point(x,y);
-                }else if( secondClosestToAverage > Math.pow(avg - averageEyeBrightness,2)) {
-                    secondClosestToAverage = avg;
-                    secondClosestAverageSegmentation = new Point(x, y);
+                if (closestLeftToAverage > Math.pow(avg - averageEyeBrightness,2)){
+                    closestLeftToAverage = avg;
+                    closestLeftAverageSegmentation = new Point(x,y);
+                }else if( closestRightToAverage > Math.pow(avg - averageEyeBrightness,2)) {
+                    closestRightToAverage = avg;
+                    closestRightToAverageSegmenatation = new Point(x, y);
                 }
             }
         }
 
-        if(closestAverageSegmentation.getX() < secondClosestAverageSegmentation.getX()){
-            eyes.add(closestAverageSegmentation);
-            eyes.add(secondClosestAverageSegmentation);
+        if(closestLeftAverageSegmentation.getX() < closestRightToAverageSegmenatation.getX()){
+            eyes.add(closestLeftAverageSegmentation);
+            eyes.add(closestRightToAverageSegmenatation);
         }else{
-            eyes.add(secondClosestAverageSegmentation);
-            eyes.add(closestAverageSegmentation);
+            eyes.add(closestRightToAverageSegmenatation);
+            eyes.add(closestLeftAverageSegmentation);
         }
         System.out.println("Average "+averageEyeBrightness);
-        System.out.println("Left "+eyes.get(0).getX() + " " + eyes.get(0).getY() + " " + closestToAverage);
-        System.out.println("Right "+eyes.get(1).getX() + " " + eyes.get(1).getY() + " " + secondClosestToAverage);
+        System.out.println("Left "+eyes.get(0).getX() + " " + eyes.get(0).getY() + " " + closestLeftToAverage);
+        System.out.println("Right "+eyes.get(1).getX() + " " + eyes.get(1).getY() + " " + closestRightToAverage);
 
         return eyes;
     }
