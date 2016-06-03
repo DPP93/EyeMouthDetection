@@ -20,7 +20,7 @@ public class SegmentationRegionGrowth {
      * @param edge edge for define if pixel will be segmentated
      * @return
      */
-    public static BufferedImage segmentateImageByGrayscale(BufferedImage image, double edge, Point startingPoint){
+    public static List<Point> segmentateImageByGrayscale(BufferedImage image, double edge, Point startingPoint){
 
         List<Point> segmentatedPoints = new ArrayList<>();
         List<Point> visitedPoints = new ArrayList<>();
@@ -35,8 +35,9 @@ public class SegmentationRegionGrowth {
         double sum = pixelTab[0];
         double average = 0;
         pointsToCheck.addAll(getNeighbourPoints(image.getWidth(), image.getHeight(), startingPoint));
-        while (!pointsToCheck.isEmpty()) {
-
+        int counter = 0;
+        while (!pointsToCheck.isEmpty() && counter < 100) {
+            counter++;
             if (visitedPoints.contains(pointsToCheck.element())){
                 pointsToCheck.remove();
                 continue;
@@ -48,8 +49,8 @@ public class SegmentationRegionGrowth {
             pixelTab = image.getRaster().getPixel((int)p.getX(), (int)p.getY(), pixelTab);
             average = sum / segmentatedPixelCounter;
 
-            if (pixelTab[0] <= average + edge && pixelTab[0] >= average - edge){
-                System.out.println(pixelTab[0] + " " + average);
+            if (pixelTab[0] <= average + edge){
+//                System.out.println(pixelTab[0] + " " + average);
                 segmentatedPoints.add(pointsToCheck.element());
                 segmentatedPixelCounter++;
                 sum += pixelTab[0];
@@ -58,18 +59,18 @@ public class SegmentationRegionGrowth {
             }
         }
 
-        pixelTab = new double[image.getColorModel().getPixelSize()/8];
-        for (int i = 0; i < pixelTab.length; i++){
-            pixelTab[i] = 255;
-        }
-        for (Point p : segmentatedPoints){
-            image.getRaster().setPixel((int)p.getX(), (int)p.getY(), pixelTab);
-        }
+//        pixelTab = new double[image.getColorModel().getPixelSize()/8];
+//        for (int i = 0; i < pixelTab.length; i++){
+//            pixelTab[i] = 255;
+//        }
+//        for (Point p : segmentatedPoints){
+//            image.getRaster().setPixel((int)p.getX(), (int)p.getY(), pixelTab);
+//        }
+//
+//        visitedPoints.clear();
+//        segmentatedPoints.clear();
 
-        visitedPoints.clear();
-        segmentatedPoints.clear();
-
-        return image;
+        return segmentatedPoints;
     }
 
     public static List<Point> segmentateImageByHSV(BufferedImage image, double edge, Point startingPoint){

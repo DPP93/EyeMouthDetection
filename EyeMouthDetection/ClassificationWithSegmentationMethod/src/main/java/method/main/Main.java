@@ -1,7 +1,9 @@
 package method.main;
 
+import method.eye.EyeFinder;
 import method.utils.ColorModelModifier;
 import method.utils.IntegralImage;
+import method.utils.MedianFilter;
 import method.utils.Point;
 import segmentation.SegmentationRegionGrowth;
 
@@ -19,13 +21,16 @@ public class Main {
         System.out.println(Main.class.getPackage());
 
         BufferedImage b = ImageIO.read(new File("gary.jpg"));
-//        b = ColorModelModifier.convertImageToGrayscale(b);
+        System.out.println("Konwersja na szaro");
+        b = ColorModelModifier.convertImageToGrayscale(b);
+        System.out.println("Mediana");
+        MedianFilter.computeMedianFilter(b);
         ImageIO.write(b, "jpg", new File("garyWhite.jpg"));
-//        b = SegmentationRegionGrowth.segmentateImageByGrayscale(b, 17, new Point(102, 117));
+//        b = SegmentationRegionGrowth.segmentateImageByGrayscale(b, 5, new Point(102, 117));
         IntegralImage ii = new IntegralImage(b);
 
-        int diff1 = 10;
-        int diff2 = 5;
+        int diff1 = 24;
+        int diff2 = 12;
 
         int x = 146;
         int y = 110;
@@ -48,5 +53,12 @@ public class Main {
         System.out.println(sum1 - sum2);
 
         ImageIO.write(b, "jpg", new File("garyTest.jpg"));
+
+
+        EyeFinder eyeFinder = new EyeFinder("MTFL");
+        System.out.println("Uczenie");
+        eyeFinder.learn();
+        System.out.println("Test");
+        eyeFinder.runTest();
     }
 }

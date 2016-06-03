@@ -7,7 +7,7 @@
     <modules>
         <module>ClassificationWithSegmentationMethod</module>
         <module>ImagesTests</module>
-        <module>Annotations</module>
+        <module>annotations.Annotations</module>
     </modules>
     <packaging>pom</packaging>
     <properties>

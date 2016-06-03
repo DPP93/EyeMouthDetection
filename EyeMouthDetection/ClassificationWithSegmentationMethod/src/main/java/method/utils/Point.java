@@ -40,5 +40,36 @@ public class Point implements Comparator<Point> {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return x+" "+y;
+    }
 
+    public static boolean isSecondPointAbove(Point p1, Point p2){
+        if(p1.getY() > p2.getY()){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isSecondPointBelow(Point p1, Point p2){
+        if(p1.getY() < p2.getY()){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isSecondPointLeft(Point p1, Point p2){
+        if(p1.getX() > p2.getX()){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isSecondPointRight(Point p1, Point p2){
+        if(p1.getX() < p2.getX()){
+            return true;
+        }
+        return false;
+    }
 }
