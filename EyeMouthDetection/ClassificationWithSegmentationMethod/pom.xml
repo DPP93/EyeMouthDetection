@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>EyeMouthDetection</artifactId>
-        <groupId>pl.dp.poid</groupId>
+        <groupId>pl.dp.oi</groupId>
         <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -16,14 +16,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>pl.dp.poid</groupId>
+            <groupId>pl.dp.oi</groupId>
             <artifactId>Annotations</artifactId>
             <version>1.0</version>
+            <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>pl.dp.poid</groupId>
-            <artifactId>Annotations</artifactId>
+            <groupId>pl.dp.oi</groupId>
+            <artifactId>ImageDatabase</artifactId>
             <version>1.0</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
     <properties>
