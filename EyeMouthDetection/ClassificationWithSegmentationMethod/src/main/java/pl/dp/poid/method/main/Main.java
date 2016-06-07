@@ -47,11 +47,12 @@ public class Main {
         int bx2 = (int) (0.63*b.getWidth()), by2 = (int) (0.3*b.getHeight());
         int cx2 = (int) (0.59*b.getWidth()), cy2 = (int) (0.28*b.getHeight());
         int dx2 = (int) (0.89*b.getWidth()), dy2 = (int) (0.095*b.getHeight());
-        int[] pixel = {255,255,255};
+        int[] pixel = {255,0,0};
         b.getRaster().setPixel(ax1, ay1, pixel);
         b.getRaster().setPixel(bx1, by1, pixel);
         b.getRaster().setPixel(cx1, cy1, pixel);
         b.getRaster().setPixel(dx1, dy1, pixel);
+        pixel = new int[]{0,255,0};
         b.getRaster().setPixel(ax2, ay2, pixel);
         b.getRaster().setPixel(bx2, by2, pixel);
         b.getRaster().setPixel(cx2, cy2, pixel);
@@ -80,9 +81,6 @@ public class Main {
         System.out.println("sum1 = " + sum1);
         System.out.println("sum2 = " + sum2);
         System.out.println(sum1 - sum2);
-
-        
-
 
         EyeFinder eyeFinder = new EyeFinder("MTFL");
         System.out.println("Uczenie");
