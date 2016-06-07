@@ -6,8 +6,8 @@ package pl.dp.poid.method.utils;
 public class ClassificationRegion {
 
     private Point[] region;
-    private static double learningParameter = 0.3;
-    private static double neighbourhoodRadius = 0.1;
+    private static double learningParameter = 0.05;
+    private static double neighbourhoodRadius = 0.05;
     public ClassificationRegion(int sizeOfRegion, double leftBoundaryStarting, double rightBoundaryStarting,
                                 double topBoundaryStarting, double bottomBoundaryStarting) {
 
@@ -58,15 +58,40 @@ public class ClassificationRegion {
         for (int i = 0; i < region.getRegion().length; i++) {
 
             if (i == closestPointIndex){
-                region.getRegion()[i] = modifyVictorousPoint(region.getRegion()[i], p, learningParameter);
+                region.getRegion()[i] = 
+                        modifyVictorousPoint(region.getRegion()[i], p, learningParameter);
+            }else{
+                region.getRegion()[i] = 
+                        modifyNeighbourPoint(
+                                region.getRegion()[i],
+                                region.getRegion()[closestPointIndex],
+                                p,
+                                learningParameter);
             }
-
+                
         }
     }
 
+    
+    
     private static Point modifyVictorousPoint(Point pointToModify, Point learningPoint, double alpha){
         pointToModify.setX(pointToModify.getX() + alpha * learningPoint.getX() * (learningPoint.getX() - pointToModify.getX()));
         pointToModify.setY(pointToModify.getY() + alpha * learningPoint.getY() * (learningPoint.getY() - pointToModify.getY()));
         return pointToModify;
+    }
+    
+    private static Point modifyNeighbourPoint(Point pointToModify, Point winningPoint, Point learningPoint, double alpha){
+        pointToModify.setX(pointToModify.getX() 
+                + alpha * computeNeighbourhood(pointToModify, winningPoint) * learningPoint.getX() * (winningPoint.getX() - pointToModify.getX()));
+        pointToModify.setY(pointToModify.getY() 
+                + alpha * computeNeighbourhood(pointToModify, winningPoint) * learningPoint.getY() *(winningPoint.getY() - pointToModify.getY()));
+        return pointToModify;
+    }
+    
+    private static double computeNeighbourhood(Point learningPoint, Point winningPoint){
+        double numerator = - Math.pow(Point.computeDistanceBetweenPoints(winningPoint, learningPoint),2);
+        double denumerator = 2.0 * Math.pow(neighbourhoodRadius, 2);
+        double result = Math.exp(numerator/denumerator);
+        return result;
     }
 }

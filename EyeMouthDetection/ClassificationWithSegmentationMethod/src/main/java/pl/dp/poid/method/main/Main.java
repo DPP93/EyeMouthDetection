@@ -87,5 +87,6 @@ public class Main {
         eyeFinder.learn();
         System.out.println("Test");
         eyeFinder.runTest();
+        System.out.println("Koniec można bezpiecznie wyłączyć");
     }
 }
