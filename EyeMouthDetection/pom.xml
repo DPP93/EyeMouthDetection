@@ -9,6 +9,7 @@
         <module>ImagesTests</module>
         <module>ImageDatabase</module>
         <module>ClassificationWithSegmentationMethod</module>
+        <module>ColorAnalysisMethod</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
