@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import pl.dp.poid.method.eye.EyeFinderWithCheckingChanges;
 
 /**
  * Created by Daniel on 2016-05-28.
@@ -82,11 +83,19 @@ public class Main {
         System.out.println("sum2 = " + sum2);
         System.out.println(sum1 - sum2);
 
-        EyeFinder eyeFinder = new EyeFinder("MTFL");
+//        EyeFinder eyeFinder = new EyeFinder("MTFL");
+//        System.out.println("Uczenie");
+//        eyeFinder.learn();
+//        System.out.println("Test");
+//        eyeFinder.runTest();
+//        System.out.println("Koniec można bezpiecznie wyłączyć");
+        
+        
+        EyeFinderWithCheckingChanges eyeFinderWithCheckingChanges = new EyeFinderWithCheckingChanges("MTFL");
         System.out.println("Uczenie");
-        eyeFinder.learn();
+        eyeFinderWithCheckingChanges.learn();
         System.out.println("Test");
-        eyeFinder.runTest();
+        eyeFinderWithCheckingChanges.runTest();
         System.out.println("Koniec można bezpiecznie wyłączyć");
     }
 }
