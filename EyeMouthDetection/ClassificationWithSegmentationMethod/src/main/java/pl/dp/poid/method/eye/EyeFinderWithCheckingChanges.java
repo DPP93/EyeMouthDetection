@@ -158,8 +158,8 @@ public class EyeFinderWithCheckingChanges {
             }
         }
 
-        for (int x = 0; x < image.getWidth(); x++) {
-            for (int y = 0; y < image.getHeight(); y++) {
+        for (int x = image.getWidth()-1; x >= 0; x--) {
+            for (int y = image.getHeight()-1; y >=0; y--) {
                 if (checkIfPointIsCloseToClassificationPoint(new Point(x, y), image, averageRightX, averageRightY)) {
                     if (checkPoint(image, new Point(x, y))) {
                         closestRightToAverageSegmenatation = new Point(x, y);
@@ -252,16 +252,16 @@ public class EyeFinderWithCheckingChanges {
             double difference = Math.abs(pointPixelValue[0] - pixelValue[0]);
             if (difference > 20) {
                 if (leftChange && pupil) {
-                    System.out.println("Difference gut right");
+//                    System.out.println("Difference gut right");
                     rightChange = true;
                     break;
                 } else {
-                    System.out.println("Difference left");
+//                    System.out.println("Difference left");
                     leftChange = true;
                     continue;
                 }
             } else if (difference < 10) {
-                System.out.println("Pupil Gut");
+//                System.out.println("Pupil Gut");
                 pupil = true;
                 continue;
             }
@@ -274,16 +274,16 @@ public class EyeFinderWithCheckingChanges {
             double difference = Math.abs(pointPixelValue[0] - pixelValue[0]);
             if (difference > 20) {
                 if (leftChangeV && pupilV) {
-                    System.out.println("Difference gut right");
+//                    System.out.println("Difference gut right");
                     rightChangeV = true;
                     break;
                 } else {
-                    System.out.println("Difference left");
+//                    System.out.println("Difference left");
                     leftChangeV = true;
                     continue;
                 }
             } else if (difference < 10) {
-                System.out.println("Pupil Gut");
+//                System.out.println("Pupil Gut");
                 pupilV = true;
                 continue;
             }
