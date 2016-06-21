@@ -202,6 +202,7 @@ public class EyeFinderWithCheckingChanges {
         Random random = new Random();
         List<ImageFile> testList = imageDatabase.getTestFiles();
         int counter = 1;
+        new File("computedImages").mkdir();
         for (ImageFile file : testList) {
             System.out.println(counter + " of " + testList.size() + " " + file.getImageName());
             BufferedImage image = ImageIO.read(file.getFile());
@@ -212,12 +213,37 @@ public class EyeFinderWithCheckingChanges {
             sb.append(" " + eyes.get(1).toString());
             sb.append(" " + new Point(0, 0).toString());
             sb.append(" " + new Point(0, 0).toString());
+            sb.append(" " + image.getWidth());
+            sb.append(" " + image.getHeight());
             pw.println(sb.toString());
             counter++;
+            
+            saveNewImage(file.getImageName(), image, eyes.get(0), eyes.get(1));
+            
         }
         pw.close();
     }
 
+    
+    public static void saveNewImage(String identifier,BufferedImage imageToCopyAndSave, Point leftEye, Point rightEye) throws IOException{
+        BufferedImage imageToSave = ImageProcessing.copyImage(imageToCopyAndSave);
+        double edge = (double)imageToSave.getWidth() * 0.1 / 2.0;
+        double[] colors = {200, 200, 200};
+        for (int x = 0; x < imageToSave.getWidth(); x++) {
+            for (int y = 0; y < imageToSave.getHeight(); y++) {
+                if (Point.computeDistanceBetweenPoints(leftEye, new Point(x, y)) <= edge){
+                    imageToSave.getRaster().setPixel(x, y, colors);
+                }
+                
+                if (Point.computeDistanceBetweenPoints(rightEye, new Point(x, y)) <= edge){
+                    imageToSave.getRaster().setPixel(x, y, colors);
+                }
+            }
+        }
+        
+        ImageIO.write(imageToSave, "jpg", new File("computedImages\\"+identifier+".jpg"));
+    }
+    
     /**
      * Checks if point is possible to be eye
      *

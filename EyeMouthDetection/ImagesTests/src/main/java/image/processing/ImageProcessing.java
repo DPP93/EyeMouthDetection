@@ -28,7 +28,7 @@ public class ImageProcessing {
         readImages();
     }
 
-    public void saveImages(){
+    public  void saveImages(){
         for (BufferedImage b : workingImages ) {
             try {
                 new File(indentifier).mkdir();
@@ -54,7 +54,7 @@ public class ImageProcessing {
         }
     }
 
-    private static BufferedImage copyImage(BufferedImage bi) {
+    public static BufferedImage copyImage(BufferedImage bi) {
         ColorModel cm = bi.getColorModel();
         boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
         WritableRaster raster = bi.copyData(null);
