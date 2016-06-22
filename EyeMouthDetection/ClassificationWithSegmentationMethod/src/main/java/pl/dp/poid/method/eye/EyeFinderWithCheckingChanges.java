@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import javax.imageio.ImageIO;
@@ -58,7 +59,7 @@ public class EyeFinderWithCheckingChanges {
 
     public EyeFinderWithCheckingChanges(String databaseDirectory) throws IOException {
         trainingAnnotations = new Annotations();
-        trainingAnnotations.setupElements(new File(databaseDirectory + "/training.txt"));
+        trainingAnnotations.setupElements(new File(databaseDirectory + "\\training.txt"));
         imageDatabase = new ImageDatabase(databaseDirectory);
         leftEyeRegion = new ClassificationRegion(classificationElements, 0, 0.5, 0, 0.5);
         rightEyeRegion = new ClassificationRegion(classificationElements, 0.5, 1, 0, 0.5);
@@ -110,22 +111,22 @@ public class EyeFinderWithCheckingChanges {
         averageLeftY /= leftEyeRegion.getRegion().length;
         averageRightX /= leftEyeRegion.getRegion().length;
         averageRightY /= leftEyeRegion.getRegion().length;
-        final XYSeriesCollection dataset = new XYSeriesCollection();
-        dataset.addSeries(leftEye);
-        dataset.addSeries(rightEye);
-        JFreeChart chart = ChartFactory.createScatterPlot("Eyes in two dimensional space", "index", "Distance",
-                dataset, PlotOrientation.VERTICAL, true, true, false);
-        XYPlot xyPlot = (XYPlot) chart.getPlot();
-        xyPlot.setDomainCrosshairVisible(true);
-        xyPlot.setRangeCrosshairVisible(true);
-        XYItemRenderer renderer = xyPlot.getRenderer();
-        renderer.setSeriesPaint(0, Color.blue);
-        renderer.setSeriesPaint(1, Color.red);
-        NumberAxis domain = (NumberAxis) xyPlot.getRangeAxis();
-        domain.setRange(0, 1);
-        domain = (NumberAxis) xyPlot.getDomainAxis();
-        domain.setRange(0, 1);
-        ChartDrawer.drawChart(chart);
+//        final XYSeriesCollection dataset = new XYSeriesCollection();
+//        dataset.addSeries(leftEye);
+//        dataset.addSeries(rightEye);
+//        JFreeChart chart = ChartFactory.createScatterPlot("Eyes in two dimensional space", "index", "Distance",
+//                dataset, PlotOrientation.VERTICAL, true, true, false);
+//        XYPlot xyPlot = (XYPlot) chart.getPlot();
+//        xyPlot.setDomainCrosshairVisible(true);
+//        xyPlot.setRangeCrosshairVisible(true);
+//        XYItemRenderer renderer = xyPlot.getRenderer();
+//        renderer.setSeriesPaint(0, Color.blue);
+//        renderer.setSeriesPaint(1, Color.red);
+//        NumberAxis domain = (NumberAxis) xyPlot.getRangeAxis();
+//        domain.setRange(0, 1);
+//        domain = (NumberAxis) xyPlot.getDomainAxis();
+//        domain.setRange(0, 1);
+//        ChartDrawer.drawChart(chart);
 
         System.out.println("AVERAGE GRAYSCALE EYE VALUE " + averageEyeBrightness);
         System.out.println("Left region");
@@ -202,7 +203,10 @@ public class EyeFinderWithCheckingChanges {
         Random random = new Random();
         List<ImageFile> testList = imageDatabase.getTestFiles();
         int counter = 1;
-        new File("computedImages").mkdir();
+        File directory = new File("computedImages");
+        directory.mkdir();
+        
+        
         for (ImageFile file : testList) {
             System.out.println(counter + " of " + testList.size() + " " + file.getImageName());
             BufferedImage image = ImageIO.read(file.getFile());
@@ -228,14 +232,14 @@ public class EyeFinderWithCheckingChanges {
     public static void saveNewImage(String identifier,BufferedImage imageToCopyAndSave, Point leftEye, Point rightEye) throws IOException{
         BufferedImage imageToSave = ImageProcessing.copyImage(imageToCopyAndSave);
         double edge = (double)imageToSave.getWidth() * 0.1 / 2.0;
-        double[] colors = {200, 200, 200};
+        double[] colors = {255, 255, 255};
         for (int x = 0; x < imageToSave.getWidth(); x++) {
             for (int y = 0; y < imageToSave.getHeight(); y++) {
-                if (Point.computeDistanceBetweenPoints(leftEye, new Point(x, y)) <= edge){
+                if ((int)Point.computeDistanceBetweenPoints(leftEye, new Point(x, y)) == (int)edge){
                     imageToSave.getRaster().setPixel(x, y, colors);
                 }
                 
-                if (Point.computeDistanceBetweenPoints(rightEye, new Point(x, y)) <= edge){
+                if ((int)Point.computeDistanceBetweenPoints(rightEye, new Point(x, y)) == (int)edge){
                     imageToSave.getRaster().setPixel(x, y, colors);
                 }
             }

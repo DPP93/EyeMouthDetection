@@ -84,7 +84,7 @@ public class ConfusionMatrix {
     }
     
     public double computeAccuracy(){
-        return (trueNegatives + trueNegatives) / (trueNegatives + truePositives + falseNegatives + falsePositives);
+        return (trueNegatives + truePositives) / (trueNegatives + truePositives + falseNegatives + falsePositives);
     }
 
     public String computeAllElements(){
@@ -100,8 +100,6 @@ public class ConfusionMatrix {
         sb.append("Sensitivity: "+computeSensitivity() + "\n");
         sb.append("Specificity: "+computeSpecifity()+ "\n");
         sb.append("Accuracy: "+computeAccuracy() + "\n");
-        sb.append("False Negative Rate: "+computeFalseNegativeRate()+ "\n");
-        sb.append("False Discovery Rate: "+computeFalseDiscoveryRate()+ "\n");
 
         return sb.toString();
     }

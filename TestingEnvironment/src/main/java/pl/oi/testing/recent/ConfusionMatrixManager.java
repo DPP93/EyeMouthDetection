@@ -58,7 +58,7 @@ public class ConfusionMatrixManager {
         double rectangleASide = 0, rectangleBSide = 0;
         double minDistanceToDecide = 0;
         for (int faceIndex = 0; faceIndex < resultFaceList.size(); faceIndex++) {
-            if (testFaceList.get(faceIndex).getLeftEye().getX() == -1){
+            if (resultFaceList.get(faceIndex).getLeftEye().getX() < 0){
                 leftEyeConfusionMatrix.incrementFN();
                 continue;
             }
@@ -84,7 +84,7 @@ public class ConfusionMatrixManager {
         double rectangleASide = 0, rectangleBSide = 0;
         double minDistanceToDecide = 0;
         for (int faceIndex = 0; faceIndex < resultFaceList.size(); faceIndex++) {
-            if (testFaceList.get(faceIndex).getRightEye().getX() == -1){
+            if (resultFaceList.get(faceIndex).getRightEye().getX() < 0){
                 rightEyeConfusionMatrix.incrementFN();
                 continue;
             }
