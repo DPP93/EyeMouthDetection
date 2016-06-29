@@ -5,6 +5,7 @@
  */
 package pl.dp.poid.method.eye;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -24,17 +25,13 @@ import pl.dp.poid.method.utils.ImageProcessing;
 import pl.dp.poid.method.utils.MedianFilter;
 import pl.dp.poid.method.utils.Point;
 import pl.dp.poid.method.utils.SimpleClassifier;
-import pl.dp.poid.segmentation.SegmentationRegionGrowth;
 
 /**
  *
  * @author Daniel
  */
-public class EyeFinderWithCheckingChanges {
-
+public class EyeAndMouthDetector {
     private double averageEyeBrightness = 10;
-    private double averageMouthBrightness = 10;
-
     private ImageDatabase imageDatabase;
     private Annotations trainingAnnotations;
 
@@ -49,7 +46,7 @@ public class EyeFinderWithCheckingChanges {
 
     private double distanceToClassifierInPixels = 15;
 
-    public EyeFinderWithCheckingChanges(String databaseDirectory) throws IOException {
+    public EyeAndMouthDetector(String databaseDirectory) throws IOException {
         trainingAnnotations = new Annotations();
         trainingAnnotations.setupElements(new File(databaseDirectory + "\\training.txt"));
         imageDatabase = new ImageDatabase(databaseDirectory);
@@ -69,46 +66,15 @@ public class EyeFinderWithCheckingChanges {
             Face face = trainingAnnotations.getFace(file.getImageName());
             BufferedImage image = ImageProcessing.copyImage(ImageIO.read(file.getFile()));
             ColorModelModifier.convertImageToGrayscale(image);
-            MedianFilter.computeMedianFilter(image);
+//            MedianFilter.computeMedianFilter(image);
             pixelValue = new int[image.getColorModel().getPixelSize() / 8];
 
             value = image.getRaster().getPixel((int) face.getLeftEye().getX(), (int) face.getLeftEye().getY(), pixelValue)[0];
             averageEyeBrightness += computeModificationOfAverage(averageEyeBrightness, value);
-            ClassificationRegion.modifyClassificationRegion(leftEyeRegion,
-                    SimpleClassifier.simpleClassificator(image, new Point((int) face.getLeftEye().getX(), (int) face.getLeftEye().getY())),
-                    0.01);
-
-            ClassificationRegion.modifyClassificationRegion(
-                    rightEyeRegion,
-                    SimpleClassifier.simpleClassificator(image, new Point((int) face.getRightEye().getX(), (int) face.getRightEye().getY())),
-                    0.01);
 
             value = image.getRaster().getPixel((int) face.getRightEye().getX(), (int) face.getRightEye().getY(), pixelValue)[0];
             averageEyeBrightness += computeModificationOfAverage(averageEyeBrightness, value);
-
-            value = image.getRaster().getPixel((int) face.getLeftMouthCorner().getX(), (int) face.getLeftMouthCorner().getY(), pixelValue)[0];
-            averageMouthBrightness += computeModificationOfAverage(averageMouthBrightness, value);
-
-            value = image.getRaster().getPixel((int) face.getRightMouthCorner().getX(), (int) face.getRightMouthCorner().getY(), pixelValue)[0];
-            averageMouthBrightness += computeModificationOfAverage(averageMouthBrightness, value);
         }
-
-        XYSeries leftEye = new XYSeries("Left Eye");
-        XYSeries rightEye = new XYSeries("Right Eye");
-
-        for (int i = 0; i < leftEyeRegion.getRegion().length; i++) {
-            leftEye.add(leftEyeRegion.getRegion()[i].getX(), 1.0 - leftEyeRegion.getRegion()[i].getY());
-            rightEye.add(rightEyeRegion.getRegion()[i].getX(), 1.0 - rightEyeRegion.getRegion()[i].getY());
-            averageLeftX += leftEyeRegion.getRegion()[i].getX();
-            averageLeftY += leftEyeRegion.getRegion()[i].getY();
-            averageRightX += rightEyeRegion.getRegion()[i].getX();
-            averageRightY += rightEyeRegion.getRegion()[i].getY();
-        }
-
-        averageLeftX /= leftEyeRegion.getRegion().length;
-        averageLeftY /= leftEyeRegion.getRegion().length;
-        averageRightX /= leftEyeRegion.getRegion().length;
-        averageRightY /= leftEyeRegion.getRegion().length;
 
         System.out.println("AVERAGE GRAYSCALE EYE VALUE " + averageEyeBrightness);
         System.out.println("Left region");
@@ -127,26 +93,27 @@ public class EyeFinderWithCheckingChanges {
         double closestLeftToAverage = Double.MAX_VALUE;
         Point closestRightToAverageSegmenatation = new Point(-1, -1);
         double closestRightToAverage = Double.MAX_VALUE;
-        
-        for (int x = 0; x < image.getWidth(); x++) {
-            for (int y = 0; y < image.getHeight(); y++) {
+        int[] pixelValue = new int[image.getColorModel().getPixelSize() / 8];
+        List<Point> elementsSegmanetated;
+        for (int x = 11; x < image.getWidth() - 11; x++) {
+            for (int y = 11; y < image.getHeight() - 11; y++) {
 
-                if (checkIfPointIsCloseToClassificationPoint(new Point(x, y), image, averageLeftX, averageLeftY)) {
+//                if (checkIfPointIsCloseToClassificationPoint(new Point(x, y), image, averageLeftX, averageLeftY)) {
 
                     if (checkPoint(image, new Point(x, y))) {
                         closestLeftAverageSegmentation = new Point(x, y);
                     }
-                }
+//                }
             }
         }
 
-        for (int x = image.getWidth() - 1; x >= 0; x--) {
-            for (int y = image.getHeight() - 1; y >= 0; y--) {
-                if (checkIfPointIsCloseToClassificationPoint(new Point(x, y), image, averageRightX, averageRightY)) {
+        for (int x = image.getWidth()-11; x >= 11; x--) {
+            for (int y = image.getHeight()-11; y >=11; y--) {
+//                if (checkIfPointIsCloseToClassificationPoint(new Point(x, y), image, averageRightX, averageRightY)) {
                     if (checkPoint(image, new Point(x, y))) {
                         closestRightToAverageSegmenatation = new Point(x, y);
                     }
-                }
+//                }
             }
         }
 
@@ -162,106 +129,6 @@ public class EyeFinderWithCheckingChanges {
         System.out.println("Right " + eyes.get(1).getX() + " " + eyes.get(1).getY() + " " + closestRightToAverage);
 
         return eyes;
-    }
-
-    public List<Point> findMouth(BufferedImage img, int plusTolerationInSegmentation, Point leftEye, Point rightEye) {
-        List<Point> mouth = new ArrayList<>();
-        BufferedImage image = ImageProcessing.copyImage(img);
-        ColorModelModifier.convertImageToGrayscale(image);
-        MedianFilter.computeMedianFilter(image);
-
-        Point leftMouth = new Point(-1, -1);
-        Point rightMouth = new Point(-1, -1);
-
-        double estimatedMouthWidth = Point.computeDistanceBetweenPoints(leftEye, rightEye);
-        List<Point> segmentated;
-        for (int x = (int) leftEye.getX(); x < leftEye.getX() + 1; x++) {
-            for (int y = (int) leftEye.getY(); y < image.getHeight() - 10; y++) {
-                Point[] mouthTab = new Point[2];
-                if (checkMouth(new Point(x, y), image, estimatedMouthWidth, mouthTab)) {
-                    leftMouth = mouthTab[0];
-                    rightMouth = mouthTab[1];
-                }
-            }
-        }
-        mouth.add(leftMouth);
-        mouth.add(rightMouth);
-        return mouth;
-    }
-
-    private boolean checkMouth(Point p, BufferedImage image, double estimateMouthSize, Point[] mouthTab) {
-
-        int[] basePointPixelValue = new int[3];
-        basePointPixelValue = image.getRaster().getPixel((int) p.getX() - 5, (int) p.getY(), basePointPixelValue);
-        int[] pixelValue = new int[3];
-
-        boolean leftChange = false;
-        boolean mouth = false;
-        boolean rightChange = false;
-        
-        Point leftChangePoint = new Point(0, 0);
-        Point rightChangePoint = new Point(0, 0);
-        //Check horizont
-        for (int i = (int) p.getX() - 4; i <= p.getX() + estimateMouthSize + 5; i++) {
-            pixelValue = image.getRaster().getPixel(i, (int) p.getY(), pixelValue);
-
-            double difference = Math.abs(basePointPixelValue[0] - pixelValue[0]);
-            if (difference > 20) {
-                if (leftChange && mouth) {
-                    rightChange = true;
-                    rightChangePoint = new Point(i, p.getY());
-                    break;
-                } else {
-                    leftChange = true;
-                    leftChangePoint = new Point(i, p.getY());
-                }
-            } else if (difference < 10) {
-                mouth = true;
-            }
-        }
-        
-        if (rightChange){
-            mouthTab[0] = leftChangePoint;
-            mouthTab[1] = rightChangePoint;
-            return true;
-        }
-        
-        return false;
-
-    }
-
-    private boolean checkSegmentatedIfItsMouth(List<Point> segmentatedPoints, double estimatedMouthSize, double imageHeight) {
-        Point maxLeft = new Point(imageHeight, imageHeight);
-        Point maxRight = new Point(0, 0);
-        Point maxTop = new Point(imageHeight, imageHeight);
-        Point maxBottom = new Point(0, 0);
-
-        for (Point p : segmentatedPoints) {
-            if (p.getX() <= maxLeft.getX()) {
-                maxLeft = p;
-            }
-
-            if (p.getX() >= maxRight.getX()) {
-                maxRight = p;
-            }
-
-            if (p.getY() <= maxTop.getY()) {
-                maxTop = p;
-            }
-
-            if (p.getY() >= maxBottom.getY()) {
-                maxBottom = p;
-            }
-        }
-        double width = Point.computeDistanceBetweenPoints(maxLeft, maxRight);
-        double height = Point.computeDistanceBetweenPoints(maxTop, maxBottom);
-        if (width >= estimatedMouthSize * 0.9
-                && width <= estimatedMouthSize * 1.1
-                && height <= imageHeight * 0.1) {
-            return true;
-        }
-
-        return false;
     }
 
     private boolean checkIfPointIsCloseToClassificationPoint(Point point, BufferedImage image, double x, double y) {
@@ -286,89 +153,49 @@ public class EyeFinderWithCheckingChanges {
         int counter = 1;
         File directory = new File("computedImages");
         directory.mkdir();
-
+        
+        
         for (ImageFile file : testList) {
             System.out.println(counter + " of " + testList.size() + " " + file.getImageName());
             BufferedImage image = ImageIO.read(file.getFile());
             List<Point> eyes = findEyes(image, 10);
-            List<Point> mouth;
-            boolean impossibleToFindMouth = false;
-            for (Point p : eyes) {
-                if (p.getX() < 0) {
-                    impossibleToFindMouth = true;
-                }
-            }
             StringBuilder sb = new StringBuilder();
             sb.append(file.getImageName());
             sb.append(" " + eyes.get(0).toString());
             sb.append(" " + eyes.get(1).toString());
-            if (!impossibleToFindMouth) {
-                mouth = findMouth(image, 10, eyes.get(0), eyes.get(1));
-                sb.append(" " + mouth.get(0).toString());
-                sb.append(" " + mouth.get(1).toString());
-                sb.append(" " + image.getWidth());
-                sb.append(" " + image.getHeight());
-                saveNewImage(file.getImageName(), image, eyes.get(0), eyes.get(1), mouth.get(0), mouth.get(1));
-            } else {
-                sb.append(" " + new Point(0, 0).toString());
-                sb.append(" " + new Point(0, 0).toString());
-                sb.append(" " + image.getWidth());
-                sb.append(" " + image.getHeight());
-                saveNewImage(file.getImageName(), image, eyes.get(0), eyes.get(1));
-            }
+            sb.append(" " + new Point(0, 0).toString());
+            sb.append(" " + new Point(0, 0).toString());
+            sb.append(" " + image.getWidth());
+            sb.append(" " + image.getHeight());
             pw.println(sb.toString());
             counter++;
+            
+            saveNewImage(file.getImageName(), image, eyes.get(0), eyes.get(1));
+            
         }
         pw.close();
     }
 
-    public static void saveNewImage(String identifier, BufferedImage imageToCopyAndSave, Point leftEye, Point rightEye) throws IOException {
+    
+    public static void saveNewImage(String identifier,BufferedImage imageToCopyAndSave, Point leftEye, Point rightEye) throws IOException{
         BufferedImage imageToSave = ImageProcessing.copyImage(imageToCopyAndSave);
-        double edge = (double) imageToSave.getWidth() * 0.1 / 2.0;
+        double edge = (double)imageToSave.getWidth() * 0.1 / 2.0;
         double[] colors = {255, 255, 255};
         for (int x = 0; x < imageToSave.getWidth(); x++) {
             for (int y = 0; y < imageToSave.getHeight(); y++) {
-                if ((int) Point.computeDistanceBetweenPoints(leftEye, new Point(x, y)) == (int) edge) {
+                if ((int)Point.computeDistanceBetweenPoints(leftEye, new Point(x, y)) == (int)edge){
                     imageToSave.getRaster().setPixel(x, y, colors);
                 }
-
-                if ((int) Point.computeDistanceBetweenPoints(rightEye, new Point(x, y)) == (int) edge) {
+                
+                if ((int)Point.computeDistanceBetweenPoints(rightEye, new Point(x, y)) == (int)edge){
                     imageToSave.getRaster().setPixel(x, y, colors);
                 }
             }
         }
-
-        ImageIO.write(imageToSave, "jpg", new File("computedImages\\" + identifier + ".jpg"));
+        
+        ImageIO.write(imageToSave, "jpg", new File("computedImages\\"+identifier+".jpg"));
     }
-
-    public static void saveNewImage(String identifier, BufferedImage imageToCopyAndSave, Point leftEye, Point rightEye, Point leftMouth, Point rightMouth) throws IOException {
-        BufferedImage imageToSave = ImageProcessing.copyImage(imageToCopyAndSave);
-        double edge = (double) imageToSave.getWidth() * 0.1 / 2.0;
-        double[] colorsEye = {255, 0, 0};
-        double[] colorsMouth = {0, 0, 255};
-        for (int x = 0; x < imageToSave.getWidth(); x++) {
-            for (int y = 0; y < imageToSave.getHeight(); y++) {
-                if ((int) Point.computeDistanceBetweenPoints(leftEye, new Point(x, y)) == (int) edge) {
-                    imageToSave.getRaster().setPixel(x, y, colorsEye);
-                }
-
-                if ((int) Point.computeDistanceBetweenPoints(rightEye, new Point(x, y)) == (int) edge) {
-                    imageToSave.getRaster().setPixel(x, y, colorsEye);
-                }
-
-                if ((int) Point.computeDistanceBetweenPoints(leftMouth, new Point(x, y)) == (int) edge) {
-                    imageToSave.getRaster().setPixel(x, y, colorsMouth);
-                }
-
-                if ((int) Point.computeDistanceBetweenPoints(rightMouth, new Point(x, y)) == (int) edge) {
-                    imageToSave.getRaster().setPixel(x, y, colorsMouth);
-                }
-            }
-        }
-
-        ImageIO.write(imageToSave, "jpg", new File("computedImages\\" + identifier + ".jpg"));
-    }
-
+    
     /**
      * Checks if point is possible to be eye
      *
@@ -392,7 +219,7 @@ public class EyeFinderWithCheckingChanges {
         boolean leftChange = false;
         boolean pupil = false;
         boolean rightChange = false;
-
+        
         boolean leftChangeV = false;
         boolean pupilV = false;
         boolean rightChangeV = false;
@@ -439,16 +266,16 @@ public class EyeFinderWithCheckingChanges {
                 continue;
             }
         }
-
+        
         if (pupil = true) {
             horizontal = true;
         }
-
-        if (pupilV = true) {
+        
+        if(pupilV = true){
             vertical = true;
         }
-
-        if (horizontal && vertical) {
+        
+        if(horizontal && vertical){
             return true;
         }
 
@@ -464,5 +291,6 @@ public class EyeFinderWithCheckingChanges {
             return -0.05 * (average - value);
         }
     }
+
 
 }
