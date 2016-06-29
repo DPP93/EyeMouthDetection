@@ -206,7 +206,7 @@ public class EyeFinderWithCheckingChanges {
             pixelValue = image.getRaster().getPixel(i, (int) p.getY(), pixelValue);
 
             double difference = Math.abs(basePointPixelValue[0] - pixelValue[0]);
-            if (difference > 20) {
+            if (difference >= 15) {
                 if (leftChange && mouth) {
                     rightChange = true;
                     rightChangePoint = new Point(i, p.getY());
@@ -215,7 +215,7 @@ public class EyeFinderWithCheckingChanges {
                     leftChange = true;
                     leftChangePoint = new Point(i, p.getY());
                 }
-            } else if (difference < 10) {
+            } else if (difference < 15) {
                 mouth = true;
             }
         }

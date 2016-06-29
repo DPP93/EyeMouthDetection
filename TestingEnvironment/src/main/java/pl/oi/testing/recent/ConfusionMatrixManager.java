@@ -102,7 +102,25 @@ public class ConfusionMatrixManager {
     }
 
     private void computeMouth(){
+        double rectangleASide = 0, rectangleBSide = 0;
+        double minDistanceToDecide = 0;
+        for (int faceIndex = 0; faceIndex < resultFaceList.size(); faceIndex++) {
+            if (resultFaceList.get(faceIndex).getLeftMouthCorner().getX() < 0){
+                mouthConfusionMatrix.incrementFN();
+                continue;
+            }
+            rectangleASide = imageDimensions.get(faceIndex).getWidth() * 0.1 / 4.0;
+            rectangleBSide = imageDimensions.get(faceIndex).getWidth() * 0.1 / 2.0;
+            minDistanceToDecide = Math.sqrt(Math.pow(rectangleASide, 2.0) + Math.pow(rectangleBSide, 2.0));
+            if (Euclides.computeDistanceBetweenPoints(testFaceList.get(faceIndex).getLeftMouthCorner(), resultFaceList.get(faceIndex).getLeftMouthCorner())
+                    <= minDistanceToDecide && Euclides.computeDistanceBetweenPoints(testFaceList.get(faceIndex).getRightMouthCorner(), resultFaceList.get(faceIndex).getRightMouthCorner())
+                    <= minDistanceToDecide){
+                mouthConfusionMatrix.incrementTP();
+            }else{
+                mouthConfusionMatrix.incrementFP();
+            }
 
+        }
     }
     
 }
