@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import pl.dp.poid.method.eye.EyeFinderWithCheckingChanges;
+import pl.dp.poid.method.eye.MaskFinder;
 
 /**
  * Created by Daniel on 2016-05-28.
@@ -91,11 +92,16 @@ public class Main {
 //        System.out.println("Koniec można bezpiecznie wyłączyć");
         
         
-        EyeFinderWithCheckingChanges eyeFinderWithCheckingChanges = new EyeFinderWithCheckingChanges("colorMethod/MTFL");
-        System.out.println("Uczenie");
-        eyeFinderWithCheckingChanges.learn();
-        System.out.println("Test");
-        eyeFinderWithCheckingChanges.runTest();
-        System.out.println("Koniec metody");
+//        EyeFinderWithCheckingChanges eyeFinderWithCheckingChanges = new EyeFinderWithCheckingChanges("colorMethod/MTFL");
+//        System.out.println("Uczenie");
+//        eyeFinderWithCheckingChanges.learn();
+//        System.out.println("Test");
+//        eyeFinderWithCheckingChanges.runTest();
+//        System.out.println("Koniec metody");
+        
+        MaskFinder mask = new MaskFinder("colorMethod/MTFL");
+        mask.learn();
+        mask.runTest();
+        System.out.println("Koniec maski");
     }
 }

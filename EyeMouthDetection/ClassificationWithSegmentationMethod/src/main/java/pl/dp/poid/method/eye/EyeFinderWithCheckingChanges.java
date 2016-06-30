@@ -310,8 +310,8 @@ public class EyeFinderWithCheckingChanges {
                 sb.append(" " + image.getHeight());
                 saveNewImage(file.getImageName(), image, eyes.get(0), eyes.get(1), mouth.get(0), mouth.get(1));
             } else {
-                sb.append(" " + new Point(0, 0).toString());
-                sb.append(" " + new Point(0, 0).toString());
+                sb.append(" " + new Point(-1, -1).toString());
+                sb.append(" " + new Point(-1, -1).toString());
                 sb.append(" " + image.getWidth());
                 sb.append(" " + image.getHeight());
                 saveNewImage(file.getImageName(), image, eyes.get(0), eyes.get(1));
