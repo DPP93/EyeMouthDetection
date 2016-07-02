@@ -42,7 +42,7 @@ public class MaskFinder {
     public MaskFinder(String databaseDirectory, String resultDirectory) throws IOException {
         this.resultDirectory = resultDirectory;
         trainingAnnotations = new Annotations();
-        trainingAnnotations.setupElements(new File(databaseDirectory + File.pathSeparator + "training.txt"));
+        trainingAnnotations.setupElements(new File(databaseDirectory + File.separator + "training.txt"));
         imageDatabase = new ImageDatabase(databaseDirectory);
     }
 
@@ -83,11 +83,13 @@ public class MaskFinder {
     }
 
     public void runTest() throws IOException {
-        File f = new File(resultDirectory+ File.pathSeparator +"results.txt");
+        File f = new File(resultDirectory+ File.separator +"results.txt");
         f.createNewFile();
         PrintWriter pw = new PrintWriter(f);
         Random random = new Random();
         List<ImageFile> testList = imageDatabase.getTestFiles();
+        File dir = new File("MaskComputedImages");
+        dir.mkdir();
         int counter = 1;
         for (ImageFile file : testList) {
             System.out.println(counter + " of " + testList.size() + " " + file.getImageName());

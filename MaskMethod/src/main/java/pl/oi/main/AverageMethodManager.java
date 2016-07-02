@@ -32,7 +32,7 @@ public class AverageMethodManager {
     public AverageMethodManager(String mtflDirectory, String resultsDirectory) throws IOException {
         this.resultDirectory = resultsDirectory;
         trainingAnnotations = new Annotations();
-        trainingAnnotations.setupElements(new File(mtflDirectory+File.pathSeparator+"training.txt"));
+        trainingAnnotations.setupElements(new File(mtflDirectory+File.separator+"training.txt"));
 
         imageDatabase = new ImageDatabase(mtflDirectory);
 
@@ -66,7 +66,7 @@ public class AverageMethodManager {
     }
 
     public void runTest() throws IOException {
-        File f = new File(resultDirectory+File.pathSeparator+"results.txt");
+        File f = new File(resultDirectory+File.separator+"results.txt");
         f.createNewFile();
         PrintWriter pw = new PrintWriter(f);
         Random random = new Random();

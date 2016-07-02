@@ -4,10 +4,11 @@ package pl.dp.poid.method.utils;
  * Created by Daniel on 2016-06-03.
  */
 public class ClassificationRegion {
-
+    
+    private int lastPointIndex = -1;
     private Point[] region;
-    private static double learningParameter = 0.05;
-    private static double neighbourhoodRadius = 0.05;
+    private static double learningParameter = 0.04;
+    private static double neighbourhoodRadius = 0.06;
     public ClassificationRegion(int sizeOfRegion, double leftBoundaryStarting, double rightBoundaryStarting,
                                 double topBoundaryStarting, double bottomBoundaryStarting) {
 
@@ -39,7 +40,7 @@ public class ClassificationRegion {
      * @param p NORMALIZED to [0,1] point
      * @param howMuch percentage of distance between winner and learning point
      */
-    public static void modifyClassificationRegion(ClassificationRegion region, Point p, double howMuch){
+    public static void modifyClassificationRegion(ClassificationRegion region, Point p, double howMuch, int lastIndex){
 
         //In case where is this point we change region, winner is learning most, escond is learning in half od winner,
         // third is learning by fourth, and so forth
@@ -49,9 +50,10 @@ public class ClassificationRegion {
         double dist;
         for (int i = 1; i < region.getRegion().length; i++) {
             dist = Point.computeDistanceBetweenPoints(region.getRegion()[i], p);
-            if (dist < minDistance){
+            if (dist < minDistance && i != lastIndex){
                 minDistance = dist;
                 closestPointIndex = i;
+                lastIndex = i;
             }
         }
 

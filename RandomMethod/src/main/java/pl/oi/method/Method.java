@@ -28,8 +28,7 @@ public class Method{
     public Method(String mtflDirectoryPath, String resultDirectory) throws IOException {
         this.resultDirectory = resultDirectory;
         trainingAnnotations = new Annotations();
-        trainingAnnotations.setupElements(new File(mtflDirectoryPath + File.pathSeparator +"training.txt"));
-
+        trainingAnnotations.setupElements(new File(mtflDirectoryPath + File.separator+ "training.txt"));
         imageDatabase = new ImageDatabase(mtflDirectoryPath);
     }
 
@@ -38,13 +37,12 @@ public class Method{
     }
 
     public void testMethod() throws IOException {
-        File f = new File(resultDirectory + File.pathSeparator + "results.txt");
+        File f = new File(resultDirectory + File.separator + "results.txt");
         f.createNewFile();
         PrintWriter pw = new PrintWriter(f);
         Random random = new Random();
         List<ImageFile> testList = imageDatabase.getTestFiles();
         for(ImageFile file : testList){
-            Face face = testAnnotations.getFace(file.getImageName());
             BufferedImage image = ImageIO.read(file.getFile());
 
             StringBuilder sb = new StringBuilder();

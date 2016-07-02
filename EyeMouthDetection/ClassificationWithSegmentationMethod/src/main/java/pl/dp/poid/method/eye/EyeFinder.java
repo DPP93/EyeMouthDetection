@@ -79,12 +79,12 @@ public class EyeFinder {
             averageEyeBrightness += computeModificationOfAverage(averageEyeBrightness, value);
             ClassificationRegion.modifyClassificationRegion(leftEyeRegion,
                     SimpleClassifier.simpleClassificator(image, new Point((int) face.getLeftEye().getX(), (int) face.getLeftEye().getY())),
-                    0.01);
+                    0.01, 0);
 
             ClassificationRegion.modifyClassificationRegion(
                     rightEyeRegion,
                     SimpleClassifier.simpleClassificator(image, new Point((int) face.getRightEye().getX(), (int) face.getRightEye().getY())),
-                    0.01);
+                    0.01, 0);
 
             value = image.getRaster().getPixel((int) face.getRightEye().getX(), (int) face.getRightEye().getY(), pixelValue)[0];
             averageEyeBrightness += computeModificationOfAverage(averageEyeBrightness, value);

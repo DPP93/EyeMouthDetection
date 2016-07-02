@@ -13,11 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javax.imageio.ImageIO;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import pl.dp.poid.annotations.Annotations;
 import pl.dp.poid.annotations.Face;
 import pl.dp.poid.imagedatabase.ImageDatabase;
 import pl.dp.poid.imagedatabase.ImageFile;
+import pl.dp.poid.method.utils.ChartDrawer;
 import pl.dp.poid.method.utils.ClassificationRegion;
 import pl.dp.poid.method.utils.ColorModelModifier;
 import pl.dp.poid.method.utils.ImageProcessing;
@@ -40,7 +45,7 @@ public class EyeFinderWithCheckingChanges {
 
     private ClassificationRegion leftEyeRegion;
     private ClassificationRegion rightEyeRegion;
-    private int classificationElements = 100;
+    private int classificationElements = 250;
 
     private double averageLeftX = 0;
     private double averageLeftY = 0;
@@ -52,7 +57,7 @@ public class EyeFinderWithCheckingChanges {
     public EyeFinderWithCheckingChanges(String databaseDirectory, String resultDirectory) throws IOException {
         this.resultDirectory = resultDirectory;
         trainingAnnotations = new Annotations();
-        trainingAnnotations.setupElements(new File(databaseDirectory + File.pathSeparator +"training.txt"));
+        trainingAnnotations.setupElements(new File(databaseDirectory + File.separator +"training.txt"));
         imageDatabase = new ImageDatabase(databaseDirectory);
         leftEyeRegion = new ClassificationRegion(classificationElements, 0, 0.5, 0, 0.5);
         rightEyeRegion = new ClassificationRegion(classificationElements, 0.5, 1, 0, 0.5);
@@ -62,6 +67,8 @@ public class EyeFinderWithCheckingChanges {
         List<ImageFile> testList = imageDatabase.getTrainingFiles();
         int[] pixelValue;
         int value;
+        int lastLeftIndex = -1;
+        int lastRightIndex = -1;
         for (int i = 0; i < testList.size(); i++) {
             if ((i + 1) % 100 == 0) {
                 System.out.println((i + 1) + " from " + testList.size());
@@ -77,12 +84,12 @@ public class EyeFinderWithCheckingChanges {
             averageEyeBrightness += computeModificationOfAverage(averageEyeBrightness, value);
             ClassificationRegion.modifyClassificationRegion(leftEyeRegion,
                     SimpleClassifier.simpleClassificator(image, new Point((int) face.getLeftEye().getX(), (int) face.getLeftEye().getY())),
-                    0.01);
+                    0.01, lastLeftIndex);
 
             ClassificationRegion.modifyClassificationRegion(
                     rightEyeRegion,
                     SimpleClassifier.simpleClassificator(image, new Point((int) face.getRightEye().getX(), (int) face.getRightEye().getY())),
-                    0.01);
+                    0.01, lastRightIndex);
 
             value = image.getRaster().getPixel((int) face.getRightEye().getX(), (int) face.getRightEye().getY(), pixelValue)[0];
             averageEyeBrightness += computeModificationOfAverage(averageEyeBrightness, value);
@@ -105,7 +112,13 @@ public class EyeFinderWithCheckingChanges {
             averageRightX += rightEyeRegion.getRegion()[i].getX();
             averageRightY += rightEyeRegion.getRegion()[i].getY();
         }
-
+        XYSeriesCollection dataset = new XYSeriesCollection();
+        dataset.addSeries(leftEye);
+        dataset.addSeries(rightEye);
+        JFreeChart chart = ChartFactory.createScatterPlot("Eyes", "0-1", "0-1", dataset);
+        
+        ChartDrawer.drawChart(chart);
+        
         averageLeftX /= leftEyeRegion.getRegion().length;
         averageLeftY /= leftEyeRegion.getRegion().length;
         averageRightX /= leftEyeRegion.getRegion().length;
@@ -207,7 +220,7 @@ public class EyeFinderWithCheckingChanges {
             pixelValue = image.getRaster().getPixel(i, (int) p.getY(), pixelValue);
 
             double difference = Math.abs(basePointPixelValue[0] - pixelValue[0]);
-            if (difference >= 15) {
+            if (difference >= 20) {
                 if (leftChange && mouth) {
                     rightChange = true;
                     rightChangePoint = new Point(i, p.getY());
@@ -216,7 +229,7 @@ public class EyeFinderWithCheckingChanges {
                     leftChange = true;
                     leftChangePoint = new Point(i, p.getY());
                 }
-            } else if (difference < 15) {
+            } else if (difference <= 10) {
                 mouth = true;
             }
         }
@@ -279,13 +292,13 @@ public class EyeFinderWithCheckingChanges {
     }
 
     public void runTest() throws IOException {
-        File f = new File(resultDirectory+File.pathSeparator+"results.txt");
+        File f = new File(resultDirectory+File.separator+"results.txt");
         f.createNewFile();
         PrintWriter pw = new PrintWriter(f);
         Random random = new Random();
         List<ImageFile> testList = imageDatabase.getTestFiles();
         int counter = 1;
-        File directory = new File("computedImages");
+        File directory = new File("checkingChangesComputedImages");
         directory.mkdir();
 
         for (ImageFile file : testList) {
@@ -339,7 +352,7 @@ public class EyeFinderWithCheckingChanges {
             }
         }
 
-        ImageIO.write(imageToSave, "jpg", new File("computedImages"+File.pathSeparator + identifier + ".jpg"));
+        ImageIO.write(imageToSave, "jpg", new File("checkingChangesComputedImages"+File.separator + identifier + ".jpg"));
     }
 
     public static void saveNewImage(String identifier, BufferedImage imageToCopyAndSave, Point leftEye, Point rightEye, Point leftMouth, Point rightMouth) throws IOException {
@@ -367,7 +380,7 @@ public class EyeFinderWithCheckingChanges {
             }
         }
 
-        ImageIO.write(imageToSave, "jpg", new File("computedImages\\" + identifier + ".jpg"));
+        ImageIO.write(imageToSave, "jpg", new File("checkingChangesComputedImages"+File.separator + identifier + ".jpg"));
     }
 
     /**
@@ -402,7 +415,7 @@ public class EyeFinderWithCheckingChanges {
             pixelValue = image.getRaster().getPixel(i, (int) point.getY(), pixelValue);
 
             double difference = Math.abs(pointPixelValue[0] - pixelValue[0]);
-            if (difference > 20) {
+            if (difference >= 15) {
                 if (leftChange && pupil) {
 //                    System.out.println("Difference gut right");
                     rightChange = true;
@@ -412,7 +425,7 @@ public class EyeFinderWithCheckingChanges {
                     leftChange = true;
                     continue;
                 }
-            } else if (difference < 10) {
+            } else if (difference < 15) {
 //                System.out.println("Pupil Gut");
                 pupil = true;
                 continue;
