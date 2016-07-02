@@ -38,10 +38,11 @@ public class MaskFinder {
     private Mask rightEye;
     private Mask leftMouth;
     private Mask rightMouth;
-
-    public MaskFinder(String databaseDirectory) throws IOException {
+    private String resultDirectory;
+    public MaskFinder(String databaseDirectory, String resultDirectory) throws IOException {
+        this.resultDirectory = resultDirectory;
         trainingAnnotations = new Annotations();
-        trainingAnnotations.setupElements(new File(databaseDirectory + "/training.txt"));
+        trainingAnnotations.setupElements(new File(databaseDirectory + File.pathSeparator + "training.txt"));
         imageDatabase = new ImageDatabase(databaseDirectory);
     }
 
@@ -82,7 +83,7 @@ public class MaskFinder {
     }
 
     public void runTest() throws IOException {
-        File f = new File("results.txt");
+        File f = new File(resultDirectory+ File.pathSeparator +"results.txt");
         f.createNewFile();
         PrintWriter pw = new PrintWriter(f);
         Random random = new Random();

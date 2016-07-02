@@ -48,10 +48,11 @@ public class EyeFinderWithCheckingChanges {
     private double averageRightY = 0;
 
     private double distanceToClassifierInPixels = 15;
-
-    public EyeFinderWithCheckingChanges(String databaseDirectory) throws IOException {
+    private String resultDirectory;
+    public EyeFinderWithCheckingChanges(String databaseDirectory, String resultDirectory) throws IOException {
+        this.resultDirectory = resultDirectory;
         trainingAnnotations = new Annotations();
-        trainingAnnotations.setupElements(new File(databaseDirectory + "\\training.txt"));
+        trainingAnnotations.setupElements(new File(databaseDirectory + File.pathSeparator +"training.txt"));
         imageDatabase = new ImageDatabase(databaseDirectory);
         leftEyeRegion = new ClassificationRegion(classificationElements, 0, 0.5, 0, 0.5);
         rightEyeRegion = new ClassificationRegion(classificationElements, 0.5, 1, 0, 0.5);
@@ -278,7 +279,7 @@ public class EyeFinderWithCheckingChanges {
     }
 
     public void runTest() throws IOException {
-        File f = new File("results.txt");
+        File f = new File(resultDirectory+File.pathSeparator+"results.txt");
         f.createNewFile();
         PrintWriter pw = new PrintWriter(f);
         Random random = new Random();
@@ -338,7 +339,7 @@ public class EyeFinderWithCheckingChanges {
             }
         }
 
-        ImageIO.write(imageToSave, "jpg", new File("computedImages\\" + identifier + ".jpg"));
+        ImageIO.write(imageToSave, "jpg", new File("computedImages"+File.pathSeparator + identifier + ".jpg"));
     }
 
     public static void saveNewImage(String identifier, BufferedImage imageToCopyAndSave, Point leftEye, Point rightEye, Point leftMouth, Point rightMouth) throws IOException {
